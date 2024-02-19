@@ -1,9 +1,11 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="../static/style.css" />
+    <link rel="stylesheet" href="{% static 'style.css' %}" />
     <title>CV</title>
   </head>
   <body>
@@ -13,8 +15,8 @@
         You can make a simple request to server with pdf files in request body.
         The server will return a json object with the text content of the pdf
       </p>
-      <h5 style="margin-top: 30px">Here is an example of request body:</h5>
-      <img src="../static/example.png" alt="example image" />
+      <h5 class="example-request">Here is an example of request body:</h5>
+      <img src="{% static 'example.png' %}" alt="example image" />
     </div>
   </body>
 </html>
