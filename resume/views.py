@@ -22,8 +22,14 @@ def generate(request):
         "max_output_tokens": 4096,
     }
     model = genai.GenerativeModel(model_name="gemini-pro", generation_config=generation_config)
-    
-    return JsonResponse({'API_KEY': os.getenv('API_KEY0')})
+
+    # return JsonResponse({'API_KEY': os.getenv('API_KEY0')})
+
+    input_text = "I am a software developer and I have worked on many projects. I have worked on a project named 'Project1' and another project named 'Project2'. I have used technologies like Python, Django, and React in my projects. I have worked on these projects from 2020 to 2021. I have also worked on a project named 'Project3' and used technologies like Java, Spring, and Hibernate in it. I have worked on this project from 2019 to 2020."
+
+    output_text = model.generate_content(input_text)
+    output_text.resolve()
+    return JsonResponse({'output_text': output_text.text})
 
     # if request.method != 'POST':
     #     return JsonResponse({'output_text': 'not post method'})
@@ -33,6 +39,3 @@ def generate(request):
 
     # input_text = request.POST.get('input_text')
     
-    # output_text = model.generate_content(input_text)
-    # output_text.resolve()
-    # return JsonResponse({'output_text': output_text.text})
