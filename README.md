@@ -78,5 +78,6 @@ An example of request:
 
 ## Frontend Part of this project
 
-Github Repo: https://github.com/AakibAlam/cv-shortlister-frontend
+Github Repo: https://github.com/AakibAlam/cv-shortlister-frontend/
+
 Deployed Link: https://mango-flower-01fa6f610.4.azurestaticapps.net/

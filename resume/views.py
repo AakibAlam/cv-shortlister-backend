@@ -83,7 +83,7 @@ def generate(request):
                 if education is not None and 'College' in education:
                     details['education'] = education['College']
 
-                print(details)
+                # print(details)
 
                 relevancy_score = (max_project_score + max_work_score) / 2
                 relevancy_score = round(relevancy_score, 2)
