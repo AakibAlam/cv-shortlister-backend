@@ -1,2 +1,3 @@
 venv
 resume/.env
+__pycache__

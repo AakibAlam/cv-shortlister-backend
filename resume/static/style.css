@@ -1,0 +1,16 @@
+.main {
+  background-color: #f2f2f2;
+  padding: 20px;
+  margin: 20px;
+  border-radius: 10px;
+  height: 100vh;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+.main img {
+  max-width: 60%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
