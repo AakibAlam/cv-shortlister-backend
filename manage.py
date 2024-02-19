@@ -4,7 +4,7 @@ import sys
 
 def main():
     
-    settings_module = 'demo.production' if 'WEBSITE_HOSTNAME' in os.environ else 'cv-shortlister-backend.settings'
+    settings_module = 'cv-shortlister-production.production' if 'WEBSITE_HOSTNAME' in os.environ else 'cv-shortlister-backend.settings'
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', settings_module)
 
     try:
