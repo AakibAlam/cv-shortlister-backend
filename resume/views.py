@@ -9,6 +9,8 @@ from resume.Utilities.intro import get_name, get_email
 from resume.Utilities.workex import get_work_experiences
 
 
+ret = []
+poll_data = []
 threshold_value_for_resume_selection = 0.0
 
 
@@ -28,8 +30,8 @@ def generate(request):
 
 
         if request.FILES and "resume" in request.FILES:
+            global ret
             pdf_files = request.FILES.getlist("resume")
-            ret = []
             for index, pdf_file in enumerate(pdf_files):
                 text = ""
                 reader = PdfReader(pdf_file)
@@ -101,9 +103,18 @@ def generate(request):
                 if relevancy_score >= threshold_value_for_resume_selection:
                     ret.append({'name': name, "email": email, "score": relevancy_score, 'resume_index': str(index), 'details': details})
 
-            ret.sort(key=lambda x: x['score'], reverse=True)
+                # print(ret)
+
             return JsonResponse(ret, safe=False)
         else:
             return JsonResponse({'error': 'No PDF files found in the request'}, status=400)
     else:
         return JsonResponse({'error': 'Only POST requests are supported'}, status=405)
+
+
+
+def poll(request):
+    global ret
+    poll_data = ret
+    ret = []
+    return JsonResponse(poll_data, safe=False)
