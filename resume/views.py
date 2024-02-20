@@ -1,15 +1,12 @@
-import os
-import json
+from PyPDF2 import PdfReader
 from django.shortcuts import render
 from django.http import JsonResponse
-from PyPDF2 import PdfReader
-from resume.Utilities.apikey import get_api_key
 from resume.Utilities.projects import get_projects
+from resume.Utilities.score import similarity_score
+from resume.Utilities.embedding import get_embedding
 from resume.Utilities.education import get_education
 from resume.Utilities.intro import get_name, get_email
-from resume.Utilities.embedding import similarity_score
 from resume.Utilities.workex import get_work_experiences
-import google.generativeai as genai
 
 
 threshold_value_for_resume_selection = 0.0
@@ -22,26 +19,32 @@ def index(request):
 def generate(request):
 
     if request.method == 'POST':
+
+
         jd_text = "Job Description:\n"
         if 'jobDescription' in request.POST:
             jd_text += request.POST.get('jobDescription')
-        # print(jd_text)
+        jd_text_embedding = get_embedding(jd_text)
+
+
         if request.FILES and "resume" in request.FILES:
             pdf_files = request.FILES.getlist("resume")
             ret = []
-            details = {}
             for index, pdf_file in enumerate(pdf_files):
                 text = ""
                 reader = PdfReader(pdf_file)
                 for page in reader.pages:
                     text += page.extract_text()
 
+
                 name = get_name(text)
                 email = get_email(text)
 
+                details = {}
+
                 max_project_score=0
-                projects = get_projects(text)
-                if projects is not None and 'Projects' in projects:
+                try:
+                    projects = get_projects(text)
                     for project in projects['Projects']:
                         desc = project['short_description']
                         techs = project['tech_stack']
@@ -50,19 +53,19 @@ def generate(request):
                             imp_text += desc
                         if techs is not None:
                             imp_text += techs
-                        score = similarity_score(imp_text, jd_text)
-                        score = 1.0
+                        imp_text_embedding = get_embedding(imp_text)
+                        score = similarity_score(imp_text_embedding, jd_text_embedding)
                         project['relevancy'] = score
                         max_project_score = max(max_project_score, score)
                     projects['Projects'].sort(key=lambda x: x['relevancy'], reverse=True) 
                     details['projects'] = projects['Projects']
+                except Exception as e:
+                    print("Error in projects section: ", e)
 
-
-                
 
                 max_work_score=0
-                work_experiences = get_work_experiences(text)
-                if work_experiences is not None and 'Professional Experience' in work_experiences:
+                try:
+                    work_experiences = get_work_experiences(text)
                     for work_experience in work_experiences['Professional Experience']:
                         desc = work_experience['short_description']
                         techs = work_experience['tech_stack']
@@ -71,19 +74,25 @@ def generate(request):
                             imp_text += desc
                         if techs is not None:
                             imp_text += techs
-                        score = similarity_score(imp_text, jd_text)
+                        imp_text_embedding = get_embedding(imp_text)
+                        score = similarity_score(imp_text_embedding, jd_text_embedding)
                         work_experience['relevancy'] = score
                         max_work_score = max(max_work_score, score)
                     work_experiences['Professional Experience'].sort(key=lambda x: x['relevancy'], reverse=True)
                     details['Professional Experience'] = work_experiences['Professional Experience']
+                except Exception as e:
+                    print("Error in work_experience section: ", e)
 
 
-                details['education'] = None
-                education = get_education(text)
-                if education is not None and 'College' in education:
+                try:
+                    education = get_education(text)
                     details['education'] = education['College']
+                except Exception as e:
+                    print("Error in education: ", e)
+
 
                 # print(details)
+
 
                 relevancy_score = (max_project_score + max_work_score) / 2
                 relevancy_score = round(relevancy_score, 2)
