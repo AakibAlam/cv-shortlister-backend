@@ -43,8 +43,8 @@ def generate(request):
                 email = get_email(text)
 
                 details = {}
+                finaltext = []
 
-                max_project_score=0
                 try:
                     projects = get_projects(text)
                     for project in projects['Projects']:
@@ -58,14 +58,13 @@ def generate(request):
                         imp_text_embedding = get_embedding(imp_text)
                         score = similarity_score(imp_text_embedding, jd_text_embedding)
                         project['relevancy'] = score
-                        max_project_score = max(max_project_score, score)
-                    projects['Projects'].sort(key=lambda x: x['relevancy'], reverse=True) 
+                        finaltext.append((score, imp_text))
+                    projects['Projects'].sort(key=lambda x: x['relevancy'], reverse=True)
                     details['projects'] = projects['Projects']
                 except Exception as e:
                     print("Error in projects section: ", e)
 
 
-                max_work_score=0
                 try:
                     work_experiences = get_work_experiences(text)
                     for work_experience in work_experiences['Professional Experience']:
@@ -79,7 +78,7 @@ def generate(request):
                         imp_text_embedding = get_embedding(imp_text)
                         score = similarity_score(imp_text_embedding, jd_text_embedding)
                         work_experience['relevancy'] = score
-                        max_work_score = max(max_work_score, score)
+                        finaltext.append((score, imp_text))
                     work_experiences['Professional Experience'].sort(key=lambda x: x['relevancy'], reverse=True)
                     details['Professional Experience'] = work_experiences['Professional Experience']
                 except Exception as e:
@@ -96,12 +95,17 @@ def generate(request):
                 # print(details)
 
 
-                relevancy_score = (max_project_score + max_work_score) / 2
-                relevancy_score = round(relevancy_score, 2)
+                imp_project_workex=""
+                finaltext.sort(key=lambda x: x[0], reverse=True)
+                for i in range(min(3, len(finaltext))):
+                    imp_project_workex += finaltext[i][1]
+                overall_embedding = get_embedding(imp_project_workex)
+                overall_score = similarity_score(overall_embedding, jd_text_embedding)
+                overall_score = round(overall_score, 2)
 
 
-                if relevancy_score >= threshold_value_for_resume_selection:
-                    ret.append({'name': name, "email": email, "score": relevancy_score, 'resume_index': str(index), 'details': details})
+                if overall_score >= threshold_value_for_resume_selection:
+                    ret.append({'name': name, "email": email, "score": overall_score, 'resume_index': str(index), 'details': details})
 
                 # print(ret)
 
