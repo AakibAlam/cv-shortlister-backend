@@ -56,11 +56,9 @@ To set up this project locally, follow these steps:
 
    - Create a `.env` file inside the project api directory.
    - Add the required environment variables to the `.env` file. For example:
-   - I used two API_KEY to avoid the limit reached error. You can add more or remove API_KEY accordingly.
 
      ```plaintext
-     API_KEY0="GEMINI_API_KEY"
-     API_KEY1="GEMINI_API_KEY"
+     API_KEY="GEMINI_API_KEY"
      ```
 
 ## Running the Development Server
@@ -80,4 +78,4 @@ An example of request:
 
 Github Repo: https://github.com/AakibAlam/cv-shortlister-frontend/
 
-Deployed Link: https://mango-flower-01fa6f610.4.azurestaticapps.net/
+Deployed Link: https://parse.cvninja.studio/
