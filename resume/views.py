@@ -31,6 +31,7 @@ def generate(request):
 
         if request.FILES and "resume" in request.FILES:
             global ret
+            res = []
             pdf_files = request.FILES.getlist("resume")
             for index, pdf_file in enumerate(pdf_files):
                 text = ""
@@ -106,10 +107,11 @@ def generate(request):
 
                 if overall_score >= threshold_value_for_resume_selection:
                     ret.append({'name': name, "email": email, "score": overall_score, 'resume_index': str(index), 'details': details})
+                    res.append({'name': name, "email": email, "score": overall_score, 'resume_index': str(index), 'details': details})
 
                 # print(ret)
 
-            return JsonResponse(ret, safe=False)
+            return JsonResponse(res, safe=False)
         else:
             return JsonResponse({'error': 'No PDF files found in the request'}, status=400)
     else:
